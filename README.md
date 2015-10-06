@@ -7,5 +7,5 @@ Microservice that Servers Streaming Zip file from S3 Securely
 ## Sample redis console call:
 
 ```
-set zip:hello '[{"S3Path":"photos/images/000/000/001/original/feb-14-prints-charming-cal-1440x900.png", "FileName":"sip1.jpg", "Folder":"event_photos"}, {"S3Path":"photos/images/000/000/002/original/feb-14-love-of-my-life-cal-1600x1200.jpg", "FileName":"sip2.jpg", "Folder":"event_photos"}]' EX 10
+set zip:hello '[{"S3Path":"path/to/image.png", "FileName":"image_name.jpg", "Folder":"images"}]' EX 10
 ```
