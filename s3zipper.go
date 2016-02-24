@@ -27,6 +27,7 @@ type Configuration struct {
 	Region             string
 	RedisServerAndPort string
 	Port               int
+	DatabaseID         int
 }
 
 var config = Configuration{}
@@ -60,11 +61,12 @@ func initAwsBucket() {
 }
 
 func InitRedis() {
+	redisDB := redigo.DialDatabase(config.DatabaseID)
 	redisPool = &redigo.Pool{
 		MaxIdle:     10,
 		IdleTimeout: 1 * time.Second,
 		Dial: func() (redigo.Conn, error) {
-			return redigo.Dial("tcp", config.RedisServerAndPort)
+			return redigo.Dial("tcp", config.RedisServerAndPort, redisDB)
 		},
 		TestOnBorrow: func(c redigo.Conn, t time.Time) (err error) {
 			_, err = c.Do("PING")
