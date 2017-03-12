@@ -85,6 +85,7 @@ type RedisFile struct {
 	FileName string
 	Folder   string
 	S3Path   string
+	URL      string
 	// Optional - we use are Teamwork.com but feel free to rmove
 	FileId      int64 `json:",string"`
 	ProjectId   int64 `json:",string"`
@@ -168,32 +169,36 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			safeFileName = "file"
 		}
 
-		// Read file from S3, log any errors
-		rdr, err := aws_bucket.GetReader(file.S3Path)
-		if err != nil {
-			switch t := err.(type) {
-			case *s3.Error:
-				if t.StatusCode == 404 {
-					log.Printf("File not found. %s", file.S3Path)
+		var rdr io.ReadCloser
+		var err error
+
+		if file.S3Path != "" {
+			// Read file from S3, log any errors
+			rdr, err = aws_bucket.GetReader(file.S3Path)
+			if err != nil {
+				switch t := err.(type) {
+				case *s3.Error:
+					if t.StatusCode == 404 {
+						log.Printf("File not found. %s", file.S3Path)
+					}
+				default:
+					log.Printf("Error downloading \"%s\" - %s", file.S3Path, err.Error())
 				}
-			default:
-				log.Printf("Error downloading \"%s\" - %s", file.S3Path, err.Error())
+				continue
 			}
-			continue
+		} else {
+			var res *http.Response
+			res, err = http.Get(file.URL)
+			if err != nil {
+				log.Printf("Error loading \"%s\" - %s", file.URL, err.Error())
+				continue
+			}
+			rdr = res.Body
 		}
 
 		// Build a good path for the file within the zip
 		zipPath := ""
-		// Prefix project Id and name, if any (remove if you don't need)
-		if file.ProjectId > 0 {
-			zipPath += strconv.FormatInt(file.ProjectId, 10) + "."
-			// Build Safe Project Name
-			file.ProjectName = makeSafeFileName.ReplaceAllString(file.ProjectName, "")
-			if file.ProjectName == "" { // Unlikely but just in case
-				file.ProjectName = "Project"
-			}
-			zipPath += file.ProjectName + "/"
-		}
+
 		// Prefix folder name, if any
 		if file.Folder != "" {
 			zipPath += file.Folder
