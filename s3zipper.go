@@ -16,7 +16,8 @@ import (
 )
 
 type configuration struct {
-	Port int
+	Port   int
+	BindTo string
 }
 
 var config = configuration{}
@@ -31,7 +32,7 @@ func main() {
 
 	fmt.Println("Running on port", config.Port)
 	http.HandleFunc("/", handler)
-	http.ListenAndServe("localhost:"+strconv.Itoa(config.Port), nil)
+	http.ListenAndServe(config.BindTo+":"+strconv.Itoa(config.Port), nil)
 }
 
 var httpClient = &http.Client{Timeout: 10 * time.Second}
