@@ -50,7 +50,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	eventID, _ := r.URL.Query()["event_id"]
 	host, _ := r.URL.Query()["host"]
 
-	resp, err := httpClient.Get(fmt.Sprint("http://", host[0], "/api/events/", eventID[0], "/photos/s3zipper?token=", str))
+	resp, err := httpClient.Get(fmt.Sprint("https://", host[0], "/api/events/", eventID[0], "/photos/s3zipper?token=", str))
 	if err != nil {
 		http.Error(w, err.Error(), 403)
 		log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, err.Error())
