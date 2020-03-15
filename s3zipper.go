@@ -99,7 +99,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			log.Printf("Error adding \"%s\" - %s", file, err.Error())
-			continue
+			break
 		}
 
 		io.Copy(f, rdr)
