@@ -36,6 +36,7 @@ func main() {
 }
 
 var httpClient = &http.Client{Timeout: 10 * time.Second}
+var dlClient = &http.Client{Timeout: 60 * time.Second}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
@@ -84,7 +85,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		var res *http.Response
-		res, err = http.Get(file)
+		res, err = dlClient.Get(file)
 
 		if err != nil {
 			log.Printf("Error loading \"%s\" - %s", file, err.Error())
