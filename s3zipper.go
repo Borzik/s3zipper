@@ -35,7 +35,7 @@ func main() {
 	http.ListenAndServe(config.BindTo+":"+strconv.Itoa(config.Port), nil)
 }
 
-var httpClient = &http.Client{Timeout: 10 * time.Second}
+var httpClient = &http.Client{Timeout: 60 * time.Second}
 var dlClient = &http.Client{Timeout: 60 * time.Second}
 
 func handler(w http.ResponseWriter, r *http.Request) {
